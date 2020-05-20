@@ -1,6 +1,17 @@
 \documentclass[runningheads]{llncs}
 \usepackage{graphicx}
 \usepackage{comment}
+\usepackage{tabularx}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.5}
+\usepackage{hyperref}
+
+
 \usepackage[colorinlistoftodos]{todonotes}
 \begin{document}
 \title{Blockchain in the Industrial Sector}
@@ -35,20 +46,17 @@ In the manufacturing industry, many technologies are evolving. They all have the
 
 
 \subsection{Research Purpose and Questions}
-The aim of this thesis is to shed light on the blockchain’s capability to improve the manufacturing industry. It will investigate the feasibility of implementing blockchain solutions within the boundaries of smart factories. To understand how blockchain can work with other technologies to overcome the challenges mentioned earlier. The main question for this research is:
+The aim of this thesis is to shed light on the blockchain’s capability to improve the manufacturing industry. To understand how blockchain can work with other technologies to overcome the challenges mentioned earlier. It will investigate the feasibility of implementing blockchain solutions within the boundaries of smart factories.  In particular, we will focus on two aspects of manufacturing. The first one is the communication between machines to enable the concept of machine-to-machine (M2M) communication. Where one machine can ask another machine to perform a certain task without any human involvement.  The second one is about tracking and tracing machines doing the manufacturing processes and the products being manufactured to enable the concept of digital twin for both the machines and the products. The main question for this research is:
 
-\paragraph{Can blockchain and smart contracts technologies be used as a basis for other manufacturing technologies?} To answer this main research question, this research will address several sub-questions:
+\paragraph{Can blockchain and smart contracts technologies be used as a basis for M2M communication and digital twins.} To answer this main research question, this research will address several sub-questions:
 \begin{itemize}
-  \item Why should blockchain be implemented inside factories? (The benefits?)
-  \item Which are the manufacturing subareas that can benefits from blockchain?
+  \item Why should blockchain be used to build such solution inside factories?
   \item What are the approaches for implementing such blockchain-based solution? 
   \item What are the challenges for implementing such blockchain-based solution? 
 \end{itemize}
 
 \subsection{Outline}
 The remainder of the document is structured as follows. Section 2 presents an overview of the research that has been made in the fields of blockchain for the manufacturing industry. In the next section, we provide an overview of the system requirements and functionalities. Then section 4, discusses some technical details about the proposed system implementation. Later in section 5, a short section about the system evaluation. Finally, the last section summarizes the document. 
-
-\newpage
 
 \section{Related Work}
 The topic of this thesis involves two domains, the manufacturing industry, and the blockchain technology. To identify the relevant existing work, we had to look for research that has been done in the manufacturing area in general and the work involves applying blockchain technology. Our search was on the popular academic search engines such as Google Scholar, arXiv, and Research Gate. We searched for the following terms: ("Blockchain" OR "Distributed Ledger" OR "Smart Contract") AND ("Manufacturing" OR "Production" OR "M2M" OR "Factories" OR "Plants").  The result of our search included research papers published in journals and conferences. During the identification and selection process, we found several technologies are being used in the manufacturing industry and can be integrated with blockchain. Many researchers have already introduced blockchain-based applications to each one of these technologies. The main technologies are cloud manufacturing and machine-to-machine communication.  
@@ -108,24 +116,53 @@ In this study, the authors focused on the industrial machine to machine communic
 
 \noindent
  The authors present a proof of concept to simulate smart contracts in the industrial context. They used two Raspberry Pi 3 boards representing field devices. MQTT server for the communication between devices. For the blockchain network and smart contract implementation, the Ropsten Ethereum test network was used. The proof of concept worked in such a way that after the device changes its state, it publishes this change to the MQTT server. The middleware subscribes to the device publications and reviews the state according to the deployed smart contracts. Once the conditions of a smart contract satisfied, The middleware publishes messages to request a service from another field device. The other device picks this message published by the middleware and executes the operation accordingly. Two experiments were performed to evaluate the impact of latency and blocking time. The blocking time is the response time of the sensor device requests a change in the state of the smart contract.  The latency time is the delay time leading to communication between field devices and ISCOM. The experiments showed a high and variable blocking time for smart contracts. Which makes them unsuitable for M2M real-time communications. 
-
 \bigbreak
 
 \noindent
-Unlike the other works, the focus here was on vertical communication within one factory. This work emphasises on the real-time requirement for M2M communications in industrial processes. The result showed that the smart contracts technology is still not mature enough to provide such essential requirement. Similar to the other works, the proof of concept was small and limited to only two devices. 
-
-
+Unlike the other works, the focus here was on vertical communication within one factory. This work emphasises on the real-time requirement for M2M communications in industrial processes. The result showed that the smart contracts technology is still not mature enough to provide such essential requirement. Similar to the other works, the proof of concept was small and limited to only two devices.
 
 \subsection{Summery}
-It is evident from the works we discussed in this section that researchers have already presented some applications of blockchain in the manufacturing industry. The approaches as we saw vary wildly and each work looks at the problem from a different angle. Some of the works focused on the horizontal integration between manufacturing parties to enable the concept of manufacturing as a service. Either between manufacturers themselves or between manufacturers and customers. These works neglected the actual manufacturing process and focused more on the concept of trading. On the other hand, some works discussed the manufacturing process by enabling machine-to-machine communication over the blockchain. However, the use cases of these works were oversimplified and in most cases were limited in size (two machines). This does not reflect the actual communications between machines on a production line. The majority of the discussed works did not store information about the manufactured products. To overcome these points, we propose our solution in the next section.
+It is evident from the works we discussed in this section that researchers have already presented some applications of blockchain in the manufacturing industry. The approaches as we saw vary a little and some work looks at the problem from a different angle. Some of the works focused on the horizontal integration between manufacturing parties to enable the concept of manufacturing as a service. Either between manufacturers themselves or between manufacturers and customers. These works neglected the actual manufacturing process and focused more on the concept of trading. On the other hand, some works discussed the manufacturing process by enabling machine-to-machine communication over the blockchain. However, the use cases of these works were oversimplified and in most cases were limited in size (two machines). This does not reflect the actual communications between machines on a production line. 
+\bigbreak
 
+\noindent The majority of the discussed works did not mention how the machine's capabilities are being modeled in their systems. This is an important aspect of M2M-based systems because it will help build a fully autonomous production pipeline. Where the machine knows the capability of another machine and can order an action based on that. Another essential aspect of such systems is the identity management of the machines and the products. Each machine has to know and identify other machines before establishing any kind of communication.  Most of the works we discussed used only the public/private key pairs to identity machines. This approach has many limitations and problems \cite{Zhu2018}. For example, it will make the identity tightly coupled with the algorithm which has been used to generate the key pair. None of the work discussed this issue of managing the identities of the machines or the products. In addition, all of the work paid no attention to the product being manufactured and did not provide the ability to trace the history of the products. Below is a comparison table that summarizes the discussion of this section.
+
+\begin{table}[]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{\textbf{Ref}} & \multicolumn{6}{c|}{\textbf{Discussed Aspects}} & \multicolumn{3}{c|}{\textbf{Implementation Aspects}} \\ \cline{2-10} 
+ & \textbf{\begin{tabular}[c]{@{}c@{}}Security and\\ Privacy\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Identity\\ Management\end{tabular}} & \textbf{M2M} & \textbf{\begin{tabular}[c]{@{}c@{}}Machines\\ Traceability\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Machine\\ Capabilities\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Products\\ Traceability\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Smart Contracts\end{tabular}} & \textbf{Prototype} & \textbf{Platform} \\ \hline
+\textbf{\cite{Angrish2018a}} & \cmark & \xmark & \xmark & \cmark & \cmark & \xmark & \begin{tabular}[c]{@{}c@{}}Communication/Trading\end{tabular} & \cmark & Ethereum \\ \hline
+\textbf{\cite{Li2018}} & \cmark & \xmark & \xmark & \xmark & \cmark & \xmark & Trading & \cmark & MultiChain \\ \hline
+\textbf{\cite{Barenji2019}} & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark & \begin{tabular}[c]{@{}c@{}}Communication/Trading\end{tabular} & \cmark & Hyperledger \\ \hline
+\textbf{\cite{Bai2019}} & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark & \begin{tabular}[c]{@{}c@{}}Communication/Trading\end{tabular} & \xmark & \xmark \\ \hline
+\textbf{\cite{Sikorski2017}} & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark & Trading & \cmark & MultiChain \\ \hline
+\textbf{\cite{Afanasev2018}} & \cmark & \xmark & \cmark & \xmark & \xmark & \xmark & Communication & \xmark & \xmark \\ \hline
+\textbf{\cite{Garrocho2019}} & \cmark & \xmark & \cmark & \cmark & \cmark & \xmark & Communication & \cmark & Ethereum \\ \hline
+\end{tabular}%
+}
+\\[10pt]
+\caption{Comparison between discussed works }
+\label{tab1}
+\end{table}
+
+
+\newpage
 
 \section{Proposed Solution}
 To answer the research questions, we will try to build a blockchain-based system in the area of manufacturing. The system collects, stores, and manages the key information generated by the factory infrastructure. The focus is on both the machines and the products being manufactured. Regarding the products, the system provides the ability to track and trace each product throughout a production pipeline. Regarding the machines, it tracks the status of the machines at any point in time. The system enables also the autonomous machine-to-machine communications. Where one machine can ask another machine to perform a certain task without any human involvement. The system envisioned will be designed and implemented using blockchain technologies such as smart contracts. It will be decentralized and distributed. The system will be serving the entities participating in the manufacturing industry such as suppliers, manufacturers, and customers. 
 
 \bigbreak 
 
-\noindent In the system, each machine and product has a digital profile. The profile of the product contains all related information about how the product has been manufactured. The profile will contain the full log of all the industrial tasks performed to this product. This includes information about the machines performed the tasks and information about the surrounding environment. Each product will have an information tag attached to it to serve as a digital identity. This can be a barcode or RFID. The tag will serve as an identifier linking the physical product with its virtual twin on the network. The profile of the machine will contain related information about the industrial tasks performed by this machine and information about the communication with other machines. All the data in the network is stored on a blockchain and is available to anyone running the system software with correct authentication.
+\noindent In the system, each machine and product has a digital profile. This profile represents the digital twin of the machine or the product.  The profile of the product contains all related information about how the product has been manufactured. The profile will contain the full log of all the industrial tasks performed to this product. This includes information about the machines performed the tasks and information about the surrounding environment. The profile of the machine will contain related information about the industrial tasks performed by this machine and information about the communication with other machines. All the data in the network is stored on a blockchain and is available to anyone running the system software with correct authentication.
+
+\bigbreak
+
+\noindent
+To manage the identity of the machines and the products, each digital twin will have a decentralized identifier (DID) \footnote{https://www.w3.org/TR/did-core/}. DID is one new generation of identifiers supporting self-sovereign identity \cite{Bartolomeu2019}. DID will link the physical object (product/machine) with its virtual twin on the network. This DID will be registered within the blockchain which means no centralized registration authority is required. Each DID point to DID documents (DDOs) contains some key information about the object such as (proof purposes, verification methods, and service endpoints). 
+
 
 \bigbreak
 
@@ -174,7 +211,7 @@ For the implementation of this thesis we are using the Quorum \footnote{https://
 The qualitative evaluation of the proposed solution will be achieved by showing that the system is actually working. This includes details about implementation and how they comply with the proposed specifications and the requirements. Then the quantitative evaluation will be presented by analyzing the performance of the system and its scalability. Another important quantitative measure in the blockchain-based system is the cost measured by gas consumption. The pricing of gas has been removed from Quorum blockchain because it is a permissioned blockchain. However, the concept of the gas itself remains and could be measured. 
 
 \section{Conclusion}
-In this document, we presented a proposal for a decentralized tracking system for the manufacturing industry. The system is utilizing blockchain technologies such as smart contracts to overcome the challenges caused by the centralization of traditional manufacturing systems. To be continued... 
+In this document, we presented a proposal for a decentralized tracking system for the manufacturing industry. The system is utilizing blockchain technologies such as smart contracts to overcome the challenges caused by the centralization of traditional manufacturing systems. In particular, the system is utilizing blockchain and smart contracts as a base technology for machine-to-machine communication and digital twins of the products and machines. The system allows tracking and tracing both the products being manufactured and the machines. 
 
 \newpage
 \bibliographystyle{splncs04}
