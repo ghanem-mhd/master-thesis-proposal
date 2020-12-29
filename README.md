@@ -1,1 +1,1 @@
-# thesis-proposal
+# Master Thesis Proposal
